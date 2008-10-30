@@ -178,6 +178,17 @@ class MethodScopingTest < ActiveRecord::TestCase
     assert_equal authors(:david).attributes, scoped_authors.first.attributes
   end
 
+  def test_scoped_find_merges_selects
+    author = Author.find(:first)
+    scoped_authors = Author.with_scope(:find => { :select => 'authors.name'}) do
+      scoped_authors = Author.with_scope(:find => { :select => 'authors.id'}) do
+        Author.find(:all, :conditions => {:id => author.id})
+      end
+    end
+    assert_equal 1, scoped_authors.size
+    assert_equal author.attributes.delete_if{|k,v| !['name', 'id'].include?(k)}, scoped_authors.first.attributes
+  end
+
   def test_scoped_count_include
     # with the include, will retrieve only developers for the given project
     Developer.with_scope(:find => { :include => :projects }) do
