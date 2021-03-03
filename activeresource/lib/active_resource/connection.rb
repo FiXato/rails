@@ -67,7 +67,8 @@ module ActiveResource
     HTTP_FORMAT_HEADER_NAMES = {  :get => 'Accept',
       :put => 'Content-Type',
       :post => 'Content-Type',
-      :delete => 'Accept'
+      :delete => 'Accept',
+      :head => 'Content-Type',
     }
 
     attr_reader :site, :user, :password, :timeout
@@ -137,7 +138,7 @@ module ActiveResource
     # Execute a HEAD request.
     # Used to obtain meta-information about resources, such as whether they exist and their size (via response headers).
     def head(path, headers = {})
-      request(:head, path, build_request_headers(headers))
+      request(:head, path, build_request_headers(headers, :head))
     end
 
 

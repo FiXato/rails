@@ -167,6 +167,12 @@ module ActionController
         segments.each { |segment| segment.freeze }
 
         route = Route.new(segments, requirements, conditions)
+        # Routes cannot use the current string interpolation method
+        # if there are user-supplied <tt>:requirements</tt> as the interpolation
+        # code won't raise RoutingErrors when generating
+        if options.key?(:requirements) || route.requirements.keys.to_set != Routing::ALLOWED_REQUIREMENTS_FOR_OPTIMISATION
+          route.optimise = false
+        end
 
         if !route.significant_keys.include?(:controller)
           raise ArgumentError, "Illegal route: the :controller must be specified!"

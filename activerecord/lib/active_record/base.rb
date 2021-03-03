@@ -1643,7 +1643,7 @@ module ActiveRecord #:nodoc:
               end
               join
             end
-            joins.flatten.uniq
+            joins.flatten.map{|j|j.strip}.uniq
           else
             joins.collect{|j| safe_to_array(j)}.flatten.uniq
           end
@@ -1975,6 +1975,8 @@ module ActiveRecord #:nodoc:
                         hash[method][key] = merge_includes(hash[method][key], params[key]).uniq
                       elsif key == :joins && merge
                         hash[method][key] = merge_joins(params[key], hash[method][key])
+                      elsif key == :select && merge
+                        hash[method][key] = [hash[method][key],params[key]].join(',')
                       else
                         hash[method][key] = hash[method][key] || params[key]
                       end

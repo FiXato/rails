@@ -277,4 +277,11 @@ class NamedScopeTest < ActiveRecord::TestCase
     post = Post.find(1)
     assert_equal post.comments.size, Post.scoped(:joins => join).scoped(:joins => join, :conditions => "posts.id = #{post.id}").size
   end
+
+  def test_chaining_with_multiple_selects
+    author = Author.find(:first)
+    selected_attributes = author.attributes.delete_if{|k,v| !['id','name'].include?(k)}
+    scoped_attributes = Author.scoped(:select => 'authors.id').scoped(:select => 'authors.name', :conditions => "authors.id = #{author.id}").first.attributes
+    assert_equal selected_attributes, scoped_attributes
+  end
 end

@@ -7,20 +7,11 @@ module ActionController
         @segments = segments
         @requirements = requirements
         @conditions = conditions
+        @optimise = true
 
         if !significant_keys.include?(:action) && !requirements[:action]
           @requirements[:action] = "index"
           @significant_keys << :action
-        end
-
-        # Routes cannot use the current string interpolation method
-        # if there are user-supplied <tt>:requirements</tt> as the interpolation
-        # code won't raise RoutingErrors when generating
-        has_requirements = @segments.detect { |segment| segment.respond_to?(:regexp) && segment.regexp }
-        if has_requirements || @requirements.keys.to_set != Routing::ALLOWED_REQUIREMENTS_FOR_OPTIMISATION
-          @optimise = false
-        else
-          @optimise = true
         end
       end
 
